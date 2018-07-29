@@ -1,0 +1,94 @@
+Вибрати товари де 
+- немає розмірів
+- один з розмірів рівний NULL
+- ознайомитись з фільтром $regex назва починається з 'D' або 'M' і товари є в наявності 
+- категорія "Vo" і ширина більше 50 
+- назва товару мітить "i" довжина менше 200
+
+
+
+use local;
+db.getCollection("MOCK_DATA (2)").find(
+    { 
+        "sizes" : {
+            "$size" : 0.0
+        }
+    }
+);
+{ sizes: { $size: 0 } }
+
+use local;
+db.getCollection("MOCK_DATA (2)").find(
+    { 
+        "$or" : [
+            {
+                "sizes.weight" : null
+            }, 
+            {
+                "sizes.length" : null
+            }
+        ]
+    }
+);
+{ $or: [ {"sizes.weight":null}, {"sizes.length":null} ] }
+
+{
+    $and: [
+        {
+            $or: [
+                {
+                    "name": {
+                        $regex: /^D/ 
+                    }
+                }
+                ,
+                {
+                    "name":{
+                        $regex: /^M/
+                    }
+                }
+            ]
+        }
+        ,
+        {
+            "availbale" : true
+        }
+    ]
+}
+{ $and: [{$or: [{"name": {$regex: /^D/ }},{"name":{$regex: /^M/}} ]}, {"availbale" : true}] }
+
+{
+    $and: [
+        {
+            "category": {
+                $regex: /^Vo/ 
+            }
+        }
+        ,
+        {
+            "sizes.weight" : {
+                $gt: 50
+            }
+        }
+    ]
+}
+{ $and: [{"category": {$regex: /^Vo/ }}, {"sizes.weight" : {$gt: 50}}] }
+
+{
+    $and: [
+        {
+            "name": {
+                $regex: /i/ 
+            }
+        }
+        ,
+        {
+            "sizes":{
+                "length" : {
+                    $lt: 200
+                }
+            }
+        }
+    ]
+}
+{ $and: [{"name": {$regex: /i/ }}, {"sizes":{"length" : {$lt: 200}}}] }
